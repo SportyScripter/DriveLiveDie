@@ -1,4 +1,4 @@
-# Santa Clous Services
+# DriveLiveDie Services
 
 ## Introduction
 
@@ -8,12 +8,12 @@
 
 2. Clone this repository to your local machine:
 ```bash
-git clone https://github.com/SportyScripter/Santa_Claus_Industry
+git clone https://github.com/SportyScripter/DriveLiveDie
 ```
 
 3. Navigate to the project directory:
 ```bash
-cd Santa_Claus_Industry
+cd DriveLiveDie
 ```
 
 4. It's recommended to use a virtual environment to manage dependencies. If you haven't installed `virtualenv` yet, you can do so using pip:
@@ -60,9 +60,6 @@ You can access the PgAdmin web interface by clicking [here](http://localhost:505
 When connecting to the database using PgAdmin, use the following connection details:
 
 - **Host Name/Address:** db
-- **Username:** Santa2137
-- **Password:** Christmas420
-- **Database name:** SantaDB
-
-
-
+- **Username:** GhostRider
+- **Password:** Devil666
+- **Database name:** DriveLiveDieApp
