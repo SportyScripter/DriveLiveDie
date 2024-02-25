@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:latest
+    container_name: DriveLiveDie_db
+    restart: no
+    volumes:
+      - DriveLiveDie_Data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - pgsql
+
+
+  pgadming:
+    image: dpage/pgadmin4
+    container_name: DriveLiveDie_pgadmin
+    restart: no
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - pgsql
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-application
+    ports:
+      - "8008:80"
+    restart: no
+    depends_on:
+      - db
+    networks:
+      - pgsql
+
+volumes:
+  DriveLiveDie_Data:
+networks:
+  pgsql:
+    driver: bridge
+    name: pgsql
