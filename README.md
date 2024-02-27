@@ -1,5 +1,14 @@
 # DriveLiveDie Services
 
+# Technologies
+
+- **Python**
+- **Docker**
+- **FastAPI**
+- **Postgresql**
+- **React**
+
+
 ## Introduction
 
 ### Build and Run the App
