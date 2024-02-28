@@ -61,7 +61,8 @@ async def change_password(request: ChangePassword, db: Session = Depends(get_db)
     if not verify_password(request.old_password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect old password")
     encrypted_password = get_hashed_password(request.new_password)
-    user.password = encrypted_password
+    user.hashed_password = encrypted_password
+    user.password = request.new_password
     db.commit()
     return {"message": "Password changed successfully"}
 
@@ -83,18 +84,3 @@ async def logout(dependencies = Depends(JWTBearer()), db: Session = Depends(get_
         raise HTTPException(status_code=401, detail="Invalid token")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-def token_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        payload = jwt.decode(kwargs['dependencies'], JWT_SECRET_KEY, ALGORITHM)
-        user_id = payload['sub']
-        data= kwargs['session'].query(Token).filter_by(user_id=user_id,access_token=kwargs['dependencies'],status=True).first()
-        if data:
-            return func(kwargs['dependencies'],kwargs['session'])
-        else:
-            return {'msg': "Token blocked"}
-    return wrapper
-    
-    

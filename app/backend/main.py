@@ -5,6 +5,8 @@ from app.backend.db.base import Base
 from app.backend.auth.routers import user_router
 from app.backend.core.config import settings
 from app.backend.auth.utils import JWT_SECRET_KEY, ALGORITHM
+from app.backend.auth.models import Token
+from functools import wraps
 
 def create_tables():
     try:
@@ -38,4 +40,17 @@ def start_application():
 app = start_application()
 
 app.include_router(user_router)
+
+def token_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        payload = jwt.decode(kwargs['dependencies'], JWT_SECRET_KEY, ALGORITHM)
+        user_id = payload['sub']
+        data= kwargs['session'].query(Token).filter_by(user_id=user_id,access_token=kwargs['dependencies'],status=True).first()
+        if data:
+            return func(kwargs['dependencies'],kwargs['session'])
+        else:
+            return {'msg': "Token blocked"}
+    return wrapper
+    
 
