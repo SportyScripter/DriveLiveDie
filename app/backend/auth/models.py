@@ -8,6 +8,7 @@ class User(Base):
     id= Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
+    password = Column(String)
     hashed_password = Column(String)
     name = Column(String, index=True, nullable=False)
     last_name = Column(String, index=True, nullable=False)
@@ -22,9 +23,9 @@ class Token(Base):
     __tablename__ = "tokens"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     access_token = Column(String, index=True)
-    token_type = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    is_active = Column(Boolean, default=True)
+    refresh_token = Column(String, index=True)
+    status = Column(Boolean, default=False)
+    user_id = Column(Integer)
     created_at = Column(DateTime, default=datetime.datetime.now())
 
     class Config:
