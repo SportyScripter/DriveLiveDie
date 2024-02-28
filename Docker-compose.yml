@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
-      - pgsql
+      - dld-network
 
 
   pgadming:
@@ -29,7 +29,7 @@ services:
     depends_on:
       - db
     networks:
-      - pgsql
+      - dld-network
 
   fastapi:
     build:
@@ -42,11 +42,24 @@ services:
     depends_on:
       - db
     networks:
-      - pgsql
+      - dld-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true # This ensures that file changes are detected
+    networks:
+      - dld-network
 
 volumes:
   DriveLiveDie_Data:
 networks:
-  pgsql:
+  dld-network:
     driver: bridge
-    name: pgsql
+    name: dld-network
