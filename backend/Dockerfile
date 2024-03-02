@@ -1,0 +1,17 @@
+FROM python:latest
+
+RUN apt-get update && apt-get install -y libpq-dev gcc
+
+WORKDIR /code
+
+COPY ./requirements.txt /code/requirements.txt
+
+# Configure Python to not buffer "stdout" or create .pyc files
+ENV PYTHONBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+COPY . /code/app
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

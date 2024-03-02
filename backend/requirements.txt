@@ -10,4 +10,5 @@ pydantic[email]
 PyJWT
 python-decouple
 python-multipart
+requests
 starlette>=0.27.0,<0.28.0

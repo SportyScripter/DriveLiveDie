@@ -4,7 +4,7 @@ FROM node:latest
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json (or yarn.lock if you use Yarn)
 COPY package.json package-lock.json ./
 
 # Install project dependencies

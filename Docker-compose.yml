@@ -31,16 +31,19 @@ services:
     networks:
       - dld-network
 
-  fastapi:
-    build:
-      context: .
+  backend:
+    build: 
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: fastapi-application
+    volumes:
+      - ./backend:/code
     ports:
-      - "8008:80"
-    restart: no
+      - 8008:80
     depends_on:
       - db
+    environment:
+      - PYTHONPATH=/app
+      - WATCHFILES_FORCE_POLLING=true
     networks:
       - dld-network
 

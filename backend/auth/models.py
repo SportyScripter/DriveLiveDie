@@ -1,11 +1,12 @@
 from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
 import datetime
 
-from app.backend.db.base_class import Base
+from db.base_class import Base
+
 
 class User(Base):
     __tablename__ = "users"
-    id= Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
@@ -18,6 +19,7 @@ class User(Base):
 
     class Config:
         orm_mode = True
+
 
 class Token(Base):
     __tablename__ = "tokens"
