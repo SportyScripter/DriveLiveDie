@@ -32,3 +32,13 @@ class Token(Base):
 
     class Config:
         orm_mode = True
+
+class Role(Base):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String, index=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.now())
+    updated_date = Column(DateTime, default=datetime.datetime.now())
+
+    class Config:
+        orm_mode = True
