@@ -1,6 +1,8 @@
 import requests
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import Annotated
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import jwt
 
 from auth.schemas import (
@@ -8,6 +10,7 @@ from auth.schemas import (
     TokenSchema,
     RequestDetails,
     ChangePassword,
+    RoleCreate
 )
 from db.session import get_db
 from auth.utils import (
@@ -16,7 +19,7 @@ from auth.utils import (
     create_refresh_token,
     get_hashed_password,
 )
-from auth.models import User, Token
+from auth.models import User, Token, Role
 from auth.auth_bearer import JWTBearer
 from auth.utils import JWT_SECRET_KEY, ALGORITHM
 
@@ -117,3 +120,20 @@ async def logout(dependencies=Depends(JWTBearer()), db: Session = Depends(get_db
         raise HTTPException(status_code=401, detail="Invalid token")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@user_router.get("/users/me")
+async def read_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())]
+):
+    return {"scheme": credentials.scheme, "credentials": credentials.credentials}
+
+@user_router.post("user/role/{role_name}/create")
+async def create_role(role_name: str, db: Session = Depends(get_db)):
+    try:
+        role = Role(name=role_name)
+        db.add(role)
+        db.commit()
+        db.refresh(role)
+        return {"message": "Role created successfully", "data": {"name": role.name}}
+    except Exception as e:
+        raise HTTPException(status_code=403, detail=str(e))
