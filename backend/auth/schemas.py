@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     password: str
     email: EmailStr
     username: str
+    role_id: int
 
 class RequestDetails(BaseModel):
     email: str
@@ -27,3 +28,6 @@ class TokenCreate(BaseModel):
     refresh_token: str
     status: bool
     created_at: datetime.datetime
+
+class RoleCreate(BaseModel):
+    name: str

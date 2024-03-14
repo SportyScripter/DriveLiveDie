@@ -1,13 +1,17 @@
 import requests
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, status,Query
 from sqlalchemy.orm import Session
+from typing import Annotated 
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import jwt
+from pydantic import EmailStr
 
 from auth.schemas import (
     UserCreate,
     TokenSchema,
     RequestDetails,
     ChangePassword,
+    RoleCreate
 )
 from db.session import get_db
 from auth.utils import (
@@ -16,16 +20,21 @@ from auth.utils import (
     create_refresh_token,
     get_hashed_password,
 )
-from auth.models import User, Token
+from auth.models import User, Token, Role
 from auth.auth_bearer import JWTBearer
 from auth.utils import JWT_SECRET_KEY, ALGORITHM
 
 user_router = APIRouter(prefix="/auth", tags=["auth"])
 
-
-@user_router.post("/register")
-async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+@user_router.post("/create_user")
+async def register_user(credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],user: UserCreate, db: Session = Depends(get_db)):
     try:
+        token = credentials.credentials
+        current_user_id = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)["sub"]
+        current_user = db.query(User).filter(User.id == current_user_id).first()
+        print(current_user)
+        if current_user.Role_id != 1:
+            return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You don't have permission to create user")
         if existing_user := db.query(User).filter_by(email=user.email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
         encrypted_password = get_hashed_password(user.password)
@@ -36,6 +45,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
             name=user.name,
             last_name=user.last_name,
             password=user.password,
+            Role_id=user.role_id,
         )
         db.add(new_user)
         db.commit()
@@ -117,3 +127,14 @@ async def logout(dependencies=Depends(JWTBearer()), db: Session = Depends(get_db
         raise HTTPException(status_code=401, detail="Invalid token")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@user_router.get("/users/me")
+async def read_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())], db: Session =  Depends(get_db)
+):
+    token = credentials.credentials
+    user_id = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)["sub"]
+    return db.query(User).filter(User.id == user_id).first()
+
+    
+
