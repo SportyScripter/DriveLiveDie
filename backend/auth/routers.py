@@ -136,18 +136,5 @@ async def read_current_user(
     user_id = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)["sub"]
     return db.query(User).filter(User.id == user_id).first()
 
-
-@user_router.post("user/role/{role_name}/create")
-async def create_role(role_name: str, db: Session = Depends(get_db)):
-    try:
-        role = Role(name=role_name)
-        db.add(role)
-        db.commit()
-        db.refresh(role)
-        return {"message": "Role created successfully", "data": {"name": role.name}}
-    except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
-    
-
     
 
