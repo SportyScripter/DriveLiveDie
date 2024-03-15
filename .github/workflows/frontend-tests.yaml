@@ -1,12 +1,12 @@
-name: Run pnpm tests
+name: Run frontend tests
 
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   test:
@@ -20,13 +20,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'pnpm'
 
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Add pnpm to PATH
+        run: echo "$(npm bin -g)" >> $GITHUB_PATH
+
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./frontend
 
       - name: Run tests
         run: pnpm test
+        working-directory: ./frontend

@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:latest
     container_name: DriveLiveDie_db
-    restart: no
+    restart: "no"
     volumes:
       - DriveLiveDie_Data:/var/lib/postgresql/data/
     ports:
@@ -20,7 +20,7 @@ services:
   pgadming:
     image: dpage/pgadmin4
     container_name: DriveLiveDie_pgadmin
-    restart: no
+    restart: "no"
     ports:
       - "5050:80"
     environment:
