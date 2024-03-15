@@ -14,13 +14,12 @@ class User(Base):
     hashed_password = Column(String)
     name = Column(String, index=True, nullable=False)
     last_name = Column(String, index=True, nullable=False)
-    is_active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
-    updated_date = Column(DateTime)
+    updated_date = Column(DateTime, default=datetime.datetime.now())
+    role = Column(String, default="user")
 
-    Role_id = Column(Integer, ForeignKey("roles.id"))
 
-    Role = relationship("Role", back_populates="users")
     tokens = relationship("Token", back_populates="users")
 
     class Config:
@@ -41,14 +40,4 @@ class Token(Base):
     class Config:
         orm_mode = True
 
-class Role(Base):
-    __tablename__ = "roles"
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, index=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.datetime.now())
-    updated_date = Column(DateTime, default=datetime.datetime.now())
 
-    users = relationship("User", back_populates="Role")
-
-    class Config:
-        orm_mode = True
