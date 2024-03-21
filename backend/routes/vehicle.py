@@ -46,18 +46,30 @@ def get_models(make_id,make,year):
         data = data['data']
         return data
     else:
-        return f"Błąd: {response.status_code}"    
+        return f"Błąd: {response.status_code}"   
 
+def get_trims(year, make,model,make_model_id,make_id):
+    path = f"https://carapi.app/api/trims?year={year}&make={make}&model={model}&make_model_id={make_model_id}&make_id={make_id}" 
+    response = requests.get(path)
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        data = data['data']
+        return data
+    return f"Błąd: {response.status_code}"
 
     
 @vehicle_router.post("/year/{car_year}")
 async def select_vehicle_year(car_year : CarYear,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
-    new_vehicle = Vehicle(year = car_year.value, user_id = current_user.id)
-    db.add(new_vehicle)
-    db.commit()
-    db.refresh(new_vehicle)
-    car_list = get_makes(car_year)
-    return car_list
+    try:
+        new_vehicle = Vehicle(year = car_year.value, user_id = current_user.id)
+        db.add(new_vehicle)
+        db.commit()
+        db.refresh(new_vehicle)
+        car_list = get_makes(car_year)
+        return car_list
+    except Exception as e:
+        raise HTTPException(status_code=403, detail="CSRF token verification failed")
+
 
 
     
@@ -76,5 +88,24 @@ async def select_vehicle_model(make_id : int, make : str,current_user: Annotated
         db.commit()
         db.refresh(vehicle)
         return car_list_of_models
+    except Exception as e:
+        raise HTTPException(status_code=403, detail="CSRF token verification failed")
+
+@vehicle_router.post("/trims/{make_model_id}/{model}")
+async def select_vehicle_trim(make_model_id : str,model : str,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+    try:
+        vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
+        if not vehicle:
+            raise HTTPException(status_code=400,detail="Start to begining")
+        car_list_of_trims = get_trims(year=vehicle.year,
+                                       make=vehicle.make,
+                                       model=model,
+                                       make_model_id=make_model_id,
+                                       make_id=vehicle.make_id)
+        vehicle.model = model
+        vehicle.make_model_id = make_model_id
+        db.commit()
+        db.refresh(vehicle)
+        return car_list_of_trims
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")

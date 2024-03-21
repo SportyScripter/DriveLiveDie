@@ -9,6 +9,8 @@ class Vehicle(Base):
     make = Column(String)
     make_id = Column(Integer)
     year = Column(Integer)
+    model = Column(String)
+    make_model_id = Column(Integer)
 
 
     users = relationship("User", back_populates="vehicles")
