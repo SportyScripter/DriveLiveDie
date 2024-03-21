@@ -11,6 +11,14 @@ class Vehicle(Base):
     year = Column(Integer)
     model = Column(String)
     make_model_id = Column(Integer)
+    trim_id = Column(Integer)
+    trim_name = Column(String)
+    trim_description = Column(String)
+    msrp = Column(Integer)
+    invoice = Column(Integer)
+    interior = Column(String)
+    rgb = Column(String)
+    
 
 
     users = relationship("User", back_populates="vehicles")

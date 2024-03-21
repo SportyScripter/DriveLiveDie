@@ -1,16 +1,18 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from db.session import get_db
-from auth.models import User, Token
-from auth.auth_bearer import JWTBearer
-from schemas.vehicle import VehicleYear
+from auth.models import User
+from schemas.vehicle import UserVehicle
 from models.vehicle import Vehicle
 import requests
 import json 
 from auth.utils import get_current_active_user
 from typing import Annotated
-vehicle_router = APIRouter(prefix="/select", tags=["vehicle"])
 from enum import Enum
+
+
+vehicle_router = APIRouter(prefix="/select", tags=["vehicle"])
+
 
 class CarYear(str,Enum):
     a = "2015"
@@ -54,6 +56,15 @@ def get_trims(year, make,model,make_model_id,make_id):
     if response.status_code == 200:
         data = json.loads(response.text)
         data = data['data']
+        return data
+    return f"Błąd: {response.status_code}"
+
+def get_colour(trim_id):
+    path = f"https://carapi.app/api/trims/{trim_id}"
+    response = requests.get(path)
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        data = data['make_model_trim_interior_colors']
         return data
     return f"Błąd: {response.status_code}"
 
@@ -109,3 +120,44 @@ async def select_vehicle_trim(make_model_id : str,model : str,current_user: Anno
         return car_list_of_trims
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")
+    
+@vehicle_router.post("/colour/{trim_id}/{trim_name}/{trim_description}/{msrp}/{invoice}")
+async def select_vehicle_trim(trim_id : int, trim_name : str, trim_description : str, msrp : int, invoice : int,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+    try:
+        vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
+        if not vehicle:
+            raise HTTPException(status_code=400,detail="Start to begining")
+        car_list_of_colour = get_colour(trim_id=trim_id)
+        vehicle.trim_id = trim_id
+        vehicle.trim_name = trim_name
+        vehicle.trim_description = trim_description
+        vehicle.msrp = msrp
+        vehicle.invoice = invoice
+        db.commit()
+        db.refresh(vehicle)
+        return car_list_of_colour
+    except Exception as e:
+        raise HTTPException(status_code=403, detail="CSRF token verification failed")
+    
+@vehicle_router.post("/interior/{interior_description}/{rgb}")
+async def select_vehicle_interior(interior_description: str , rgb : str,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+    try:
+        vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
+        if not vehicle:
+            raise HTTPException(status_code=400,detail="Start to begining")
+        vehicle.interior = interior_description
+        vehicle.rgb = rgb
+        db.commit()
+        db.refresh(vehicle)
+        user_vehicle = UserVehicle(year=vehicle.year,
+                                   make=vehicle.make,
+                                   model=vehicle.model,
+                                   trim_name=vehicle.trim_name,
+                                   trim_description=vehicle.trim_description,
+                                   msrp=vehicle.msrp,
+                                   invoice=vehicle.invoice,
+                                   interior=vehicle.interior,
+                                   rgb=vehicle.rgb)
+        return user_vehicle
+    except Exception as e:
+        raise HTTPException(status_code=403, detail=str(e))
