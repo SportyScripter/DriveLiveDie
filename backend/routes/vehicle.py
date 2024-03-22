@@ -40,7 +40,8 @@ def get_makes(car_year : CarYear):
     else:
         return f"Błąd:  {response.status_code}"
 
-def get_models(make_id,make,year):
+
+def get_models(make_id, make, year):
     path = f'https://carapi.app/api/models?year={year}&make={make}&make_id={make_id}'
     response = requests.get(path)
     if response.status_code == 200:
@@ -50,7 +51,8 @@ def get_models(make_id,make,year):
     else:
         return f"Błąd: {response.status_code}"   
 
-def get_trims(year, make,model,make_model_id,make_id):
+
+def get_trims(year, make, model, make_model_id, make_id):
     path = f"https://carapi.app/api/trims?year={year}&make={make}&model={model}&make_model_id={make_model_id}&make_id={make_id}" 
     response = requests.get(path)
     if response.status_code == 200:
@@ -58,6 +60,7 @@ def get_trims(year, make,model,make_model_id,make_id):
         data = data['data']
         return data
     return f"Błąd: {response.status_code}"
+
 
 def get_colour(trim_id):
     path = f"https://carapi.app/api/trims/{trim_id}"
@@ -70,9 +73,12 @@ def get_colour(trim_id):
 
     
 @vehicle_router.post("/year/{car_year}")
-async def select_vehicle_year(car_year : CarYear,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+async def select_vehicle_year(car_year : CarYear,
+                              current_user: Annotated[User, Depends(get_current_active_user)],
+                              db: Session = Depends(get_db)):
     try:
-        new_vehicle = Vehicle(year = car_year.value, user_id = current_user.id)
+        new_vehicle = Vehicle(year = car_year.value,
+                              user_id = current_user.id)
         db.add(new_vehicle)
         db.commit()
         db.refresh(new_vehicle)
@@ -81,17 +87,20 @@ async def select_vehicle_year(car_year : CarYear,current_user: Annotated[User, D
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")
 
-
-
     
 
 @vehicle_router.post("/models/{make_id}/{make}")
-async def select_vehicle_model(make_id : int, make : str,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+async def select_vehicle_model(make_id : int,
+                               make : str,
+                               current_user: Annotated[User, Depends(get_current_active_user)],
+                               db: Session = Depends(get_db)):
     try:
         vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
         if not vehicle:
             raise HTTPException(status_code=400 , datail="Start to begining")
-        car_list_of_models = get_models(make_id=make_id,make=make,year=vehicle.year)
+        car_list_of_models = get_models(make_id=make_id,
+                                        make=make,
+                                        year=vehicle.year)
         if not car_list_of_models:
             raise HTTPException(status_code=400 , detail="Vahicle idn't exists")
         vehicle.make = make
@@ -102,8 +111,12 @@ async def select_vehicle_model(make_id : int, make : str,current_user: Annotated
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")
 
+
 @vehicle_router.post("/trims/{make_model_id}/{model}")
-async def select_vehicle_trim(make_model_id : str,model : str,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+async def select_vehicle_trim(make_model_id : str,
+                              model : str,
+                              current_user: Annotated[User, Depends(get_current_active_user)],
+                              db: Session = Depends(get_db)):
     try:
         vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
         if not vehicle:
@@ -121,8 +134,15 @@ async def select_vehicle_trim(make_model_id : str,model : str,current_user: Anno
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")
     
+
 @vehicle_router.post("/colour/{trim_id}/{trim_name}/{trim_description}/{msrp}/{invoice}")
-async def select_vehicle_trim(trim_id : int, trim_name : str, trim_description : str, msrp : int, invoice : int,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+async def select_vehicle_trim(trim_id : int,
+                                trim_name : str,
+                                trim_description : str,
+                                msrp : int,
+                                invoice : int,
+                                current_user: Annotated[User, Depends(get_current_active_user)],
+                                db: Session = Depends(get_db)):
     try:
         vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
         if not vehicle:
@@ -139,8 +159,12 @@ async def select_vehicle_trim(trim_id : int, trim_name : str, trim_description :
     except Exception as e:
         raise HTTPException(status_code=403, detail="CSRF token verification failed")
     
+
 @vehicle_router.post("/interior/{interior_description}/{rgb}")
-async def select_vehicle_interior(interior_description: str , rgb : str,current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+async def select_vehicle_interior(interior_description: str,
+                                  rgb : str,
+                                  current_user: Annotated[User, Depends(get_current_active_user)],
+                                  db: Session = Depends(get_db)):
     try:
         vehicle = db.query(Vehicle).filter_by(user_id = current_user.id).order_by(Vehicle.id.desc()).first()
         if not vehicle:
