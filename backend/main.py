@@ -7,6 +7,7 @@ from core.config import settings
 from auth.utils import JWT_SECRET_KEY, ALGORITHM
 from auth.models import Token
 from functools import wraps
+from routes.vehicle import vehicle_router
 
 
 def create_tables():
@@ -40,6 +41,7 @@ def start_application():
 app = start_application()
 
 app.include_router(user_router)
+app.include_router(vehicle_router)
 
 
 def token_required(func):

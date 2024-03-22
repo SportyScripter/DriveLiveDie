@@ -21,6 +21,7 @@ class User(Base):
 
 
     tokens = relationship("Token", back_populates="users")
+    vehicles = relationship("Vehicle", back_populates="users")
 
     class Config:
         orm_mode = True
@@ -39,5 +40,6 @@ class Token(Base):
 
     class Config:
         orm_mode = True
+
 
 
