@@ -34,8 +34,7 @@ jobs:
         working-directory: ./backend
 
       - name: Run tests
-        run: |
-          pytest
+        run: pytest
         working-directory: ./backend
 
 
