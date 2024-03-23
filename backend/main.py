@@ -8,9 +8,7 @@ from auth.utils import JWT_SECRET_KEY, ALGORITHM
 from auth.models import Token
 from functools import wraps
 from routes.vehicle import vehicle_router
-import pytest 
 
-pytest.main()
 
 def create_tables():
     try:
