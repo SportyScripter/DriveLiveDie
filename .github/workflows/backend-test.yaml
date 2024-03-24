@@ -31,5 +31,7 @@ jobs:
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
       - name: Test with pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest backend/test --doctest-modules --junitxml=junit/test-results.xml --cov=backend --cov-report=xml --cov-report=html
