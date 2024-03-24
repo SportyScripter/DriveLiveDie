@@ -30,4 +30,5 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest pytest-cov
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest backend/test --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
