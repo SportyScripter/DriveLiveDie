@@ -11,9 +11,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaluts:
-      run:
-        working-directory: ./backend/
+    working-directory: ./backend
 
     steps:
       - uses: actions/checkout@v3
