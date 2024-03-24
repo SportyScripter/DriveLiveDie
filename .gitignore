@@ -6,8 +6,4 @@ frontend/node_modules/*
 frontend/.next/*
 frontend/coverage/*
 frontend/dist/*
-<<<<<<< HEAD
 *__pycache__
-=======
-*__pycache__
->>>>>>> b44d637bbb2ad35d29ef37d05b521dfb34e3a70f
