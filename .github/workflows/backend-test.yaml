@@ -12,6 +12,7 @@ jobs:
   backend-test:
     name: Backend Test
     runs-on: ubuntu-latest
+    working-directory: ./backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
