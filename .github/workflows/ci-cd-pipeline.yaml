@@ -24,37 +24,37 @@ jobs:
           docker-compose build
 
   backend-test:
-  name: Backend Test
-  needs: docker-build
-  runs-on: ubuntu-latest
-  services:
-    postgres:
-      image: postgres
-      env:
-        POSTGRES_PASSWORD: postgres
-      options: >-
-        --health-cmd pg_isready
-        --health-interval 10s
-        --health-timeout 5s
-        --health-retries 5
-      ports:
-        - 5432:5432
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    name: Backend Test
+    needs: docker-build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Build Docker images
-      run: docker-compose build
+      - name: Build Docker images
+        run: docker-compose build
 
-    - name: Start Docker Compose services
-      run: docker-compose up -d
+      - name: Start Docker Compose services
+        run: docker-compose up -d
 
-    - name: Wait for database to be ready
-      run: until docker-compose exec db pg_isready ; do sleep 1 ; done
+      - name: Wait for database to be ready
+        run: until docker-compose exec db pg_isready ; do sleep 1 ; done
 
-    - name: Run pytest in Docker
-      run: docker-compose exec -T backend pytest
-      working-directory: ./backend
+      - name: Run pytest in Docker
+        run: docker-compose exec -T backend pytest
+        working-directory: ./backend
 
   frontend-test:
     name: Frontend Test
