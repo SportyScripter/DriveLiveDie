@@ -27,27 +27,12 @@ jobs:
     name: Backend Test
     needs: docker-build
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker images
-        run: docker-compose build
-
-      - name: Start Docker Compose services
-        run: docker-compose up -d
+      - name: Build and start Docker containers
+        run: docker-compose up -d --build
 
       - name: Install dockerize
         run: |
@@ -57,11 +42,10 @@ jobs:
           rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
       - name: Wait for database to be ready
-        run: dockerize -wait tcp://db:5432 -timeout 1m
+        run: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - name: Run pytest in Docker
         run: docker-compose exec -T backend pytest
-        working-directory: ./backend
 
   frontend-test:
     name: Frontend Test
