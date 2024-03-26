@@ -1,4 +1,4 @@
-from backend.auth.utils import (
+from auth.utils import (
 get_hashed_password,
 password_context)
 import unittest
