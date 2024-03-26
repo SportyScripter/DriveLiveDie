@@ -42,7 +42,7 @@ jobs:
           rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
       - name: Wait for database to be ready
-        run: dockerize -wait tcp://localhost:5432 -timeout 1m
+        run: dockerize -wait tcp://localhost:5433 -timeout 1m
 
       - name: Run pytest in Docker
         run: docker-compose exec -T backend pytest
