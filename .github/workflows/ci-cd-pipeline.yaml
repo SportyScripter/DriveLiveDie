@@ -50,7 +50,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for database to be ready
-        run: until docker-compose exec db pg_isready ; do sleep 1 ; done
+        run: dockerize -wait tcp://db:5432 -timeout 1m
 
       - name: Run pytest in Docker
         run: docker-compose exec -T backend pytest
