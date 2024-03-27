@@ -13,3 +13,4 @@ python-multipart
 requests
 starlette>=0.27.0,<0.28.0
 pytest >= 8.1.1
+httpx >= 0.20.0
