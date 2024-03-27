@@ -1,122 +1,115 @@
 import pytest
-import unittest
-import jwt
-import auth.utils as u
 from datetime import datetime, timedelta, timezone
-from typing import Union
-from fastapi import HTTPException
-
-
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-JWT_SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-
-def test_get_hashed_password():
-    test_password = "superSecret123"
-    hashed_password = u.get_hashed_password(test_password)
-    assert password_context.verify(test_password, hashed_password), "The hashed password does not match the original password."
-
-class MockPasswordContext:
-    @staticmethod
-    def verify(password, hashed_password):
-        return password == hashed_password
+from auth import utils
 
 class MockUser:
-    def __init__(self, is_active):
+    def __init__(self, is_active=True, role="user"):
         self.is_active = is_active
+        self.role = role
 
-class TestVerifyPassword(unittest.TestCase):
-    def setUp(self):
-        # Replace the actual password_context with the mock
-        self.original_password_context = password_context
-        global password_context
-        password_context = MockPasswordContext
+class MockDB:
+    def __init__(self, user=None):
+        self.user = user
 
-    def tearDown(self):
-        # Restore the original password_context after each test
-        global password_context
-        password_context = self.original_password_context
+    def query(self, model):
+        return self
+    
+    def filter(self, condition):
+        return self
+    
+    def first(self):
+        return self.user
 
-    def test_correct_password(self):
-        # Given
-        password = "correct_password"
-        hashed_password = "correct_password"
-        # When
-        result = u.verify_password(password, hashed_password)
-        # Then
-        self.assertTrue(result)
+@pytest.fixture
+def mock_db():
+    return MockDB()
 
-    def test_incorrect_password(self):
-        # Given
-        password = "incorrect_password"
-        hashed_password = "correct_password"
-        # When
-        result = u.verify_password(password, hashed_password)
-        # Then
-        self.assertFalse(result)
+def test_get_hashed_password():
+    # Given
+    test_password = "superSecret123"
+    # When
+    hashed_password = utils.get_hashed_password(test_password)
+    # Then
+    assert utils.password_context.verify(test_password, hashed_password)
 
+def test_verify_password():
+    # Given
+    password = "correct_password"
+    hashed_password = utils.get_hashed_password(password)
+    # When & Then
+    assert utils.verify_password(password, hashed_password)
+    assert not utils.verify_password("incorrect_password", hashed_password)
 
-def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
-    if expires_delta is not None:
-        expires_delta = datetime.now(timezone.utc) + timedelta(seconds=expires_delta)
-    else:
-        expires_delta = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expires_delta, "sub": str(subject)}
-    return jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
+def test_create_access_token():
+    # Given
+    subject = "test_subject"
+    expires_delta = 3600  # 1 hour expiry
+    # When
+    token = utils.create_access_token(subject, expires_delta)
+    decoded_token = utils.jwt.decode(token, utils.JWT_SECRET_KEY, algorithms=[utils.ALGORITHM])
+    # Then
+    assert decoded_token['sub'] == subject
+    assert 'exp' in decoded_token
+    assert datetime.utcfromtimestamp(decoded_token['exp']) - (datetime.now(timezone.utc) + timedelta(seconds=expires_delta)) < timedelta(seconds=5)
 
-class TestCreateAccessToken(unittest.TestCase):
-    def test_create_token_with_custom_expiry(self):
-        # Given
-        subject = "test_subject"
-        expires_delta = 3600  # 1 hour expiry
-        # When
-        token = create_access_token(subject, expires_delta)
-        decoded_token = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-        # Then
-        self.assertEqual(decoded_token['sub'], subject)
-        self.assertIn('exp', decoded_token)
-        self.assertAlmostEqual(
-            datetime.utcfromtimestamp(decoded_token['exp']),
-            datetime.now(timezone.utc) + timedelta(seconds=expires_delta),
-            delta=timedelta(seconds=5)
-        )
-
-    def test_create_token_with_default_expiry(self):
-        # Given
-        subject = "test_subject"
-        # When
-        token = create_access_token(subject)
-        decoded_token = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-        # Then
-        self.assertEqual(decoded_token['sub'], subject)
-        self.assertIn('exp', decoded_token)
-        self.assertAlmostEqual(
-            datetime.utcfromtimestamp(decoded_token['exp']),
-            datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-            delta=timedelta(seconds=5)
-        )
+def test_create_refresh_token():
+    # Given
+    subject = "test_subject"
+    expires_delta = 3600  # 1 hour expiry
+    # When
+    token = utils.create_refresh_token(subject, expires_delta)
+    decoded_token = utils.jwt.decode(token, utils.JWT_REFRESH_SECRET_KEY, algorithms=[utils.ALGORITHM])
+    # Then
+    assert decoded_token['sub'] == subject
+    assert 'exp' in decoded_token
+    assert datetime.utcfromtimestamp(decoded_token['exp']) - (datetime.now(timezone.utc) + timedelta(seconds=expires_delta)) < timedelta(seconds=5)
 
 @pytest.mark.asyncio
-async def test_get_current_active_user_active_user():
+async def test_get_current_user_active():
     # Given
-    active_user = MockUser(is_active=True)
-    
+    active_user = MockUser()
+    db = MockDB(active_user)
     # When
-    result = await u.get_current_active_user(active_user)
-    
+    result = await utils.get_current_user(MockDB(), db)
     # Then
     assert result == active_user
 
 @pytest.mark.asyncio
-async def test_get_current_active_user_inactive_user():
+async def test_get_current_user_inactive():
     # Given
     inactive_user = MockUser(is_active=False)
-    
+    db = MockDB(inactive_user)
     # When & Then
-    with pytest.raises(HTTPException) as exc_info:
-        # When
-        await u.get_current_active_user(inactive_user)
-    
+    with pytest.raises(utils.HTTPException) as exc_info:
+        await utils.get_current_user(MockDB(), db)
+    assert exc_info.value.status_code == utils.status.HTTP_401_UNAUTHORIZED
+
+@pytest.mark.asyncio
+async def test_get_current_active_user_active():
+    # Given
+    active_user = MockUser()
+    # When
+    result = await utils.get_current_active_user(active_user)
     # Then
-    assert exc_info.value.status_code == 400
-    assert exc_info.value.detail == "Inactive user"
+    assert result == active_user
+
+@pytest.mark.asyncio
+async def test_get_current_active_user_inactive():
+    # Given
+    inactive_user = MockUser(is_active=False)
+    # When & Then
+    with pytest.raises(utils.HTTPException) as exc_info:
+        await utils.get_current_active_user(inactive_user)
+    assert exc_info.value.status_code == utils.status.HTTP_400_BAD_REQUEST
+
+def test_role_checker():
+    # Given
+    allowed_roles = ["admin"]
+    checker = utils.RoleChecker(allowed_roles)
+    user = MockUser(role="admin")
+    # When & Then
+    assert checker(user)
+    user = MockUser(role="user")
+    with pytest.raises(utils.HTTPException) as exc_info:
+        checker(user)
+    assert exc_info.value.status_code == utils.status.HTTP_401_UNAUTHORIZED
