@@ -20,7 +20,7 @@ This command runs all the tests in the `backend` service using pytest.
 
 ## Generating Coverage Report in Terminal
 
-To generate a coverage report Terminal:
+To generate a coverage report in Terminal:
 
 ```bash
 docker-compose exec backend coverage report
