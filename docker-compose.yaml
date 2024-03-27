@@ -8,14 +8,13 @@ services:
     volumes:
       - DriveLiveDie_Data:/var/lib/postgresql/data/
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - dld-network
-
 
   pgadming:
     image: dpage/pgadmin4
@@ -32,7 +31,7 @@ services:
       - dld-network
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
@@ -46,6 +45,15 @@ services:
       - WATCHFILES_FORCE_POLLING=true
     networks:
       - dld-network
+
+  test:
+    build:
+      context: ./backend
+    command: pytest
+    volumes:
+      - .:/code
+    depends_on:
+      - db
 
   frontend:
     build:
