@@ -16,6 +16,7 @@ def mock_user():
 def mock_inactive_user():
     return MockUser(is_active=False)
  
+
 def test_get_hashed_password():
     test_password = "superSecret123"
     hashed_password = utils.get_hashed_password(test_password)
