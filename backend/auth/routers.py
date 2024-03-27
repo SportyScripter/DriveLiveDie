@@ -27,11 +27,45 @@ from auth.utils import JWT_SECRET_KEY, ALGORITHM
 
 user_router = APIRouter(prefix="/auth", tags=["auth"])
 
-@user_router.post("/create_user")
+def check_is_correct_string(string: str):
+    try:
+        table_with_not_correct_characters = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", "'", "\"", "<", ">", ",", ".", "?", "/", " "]
+        if any(char in table_with_not_correct_characters for char in string):
+            return False
+        elif string.isnumeric():
+            return False
+    except Exception as e:
+        return False
+    return True
+
+def password_is_correct(password: str):
+    table_with_correct_chars = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", "'", "\"", "<", ">", ",", ".", "?", "/"]
+    if len(password) < 8:
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not any(char.isupper() for char in password):
+        return False
+    if not any(char.islower() for char in password):
+        return False
+    if not any(char in table_with_correct_chars for char in password):
+        return True
+    return True
+
+
+@user_router.post("/create-user")
 async def register_user(authorization : Annotated[bool, Depends(RoleChecker(allowed_roles=["admin"]))],user: UserCreate, db: Session = Depends(get_db)):
     try:
         if existing_user := db.query(User).filter_by(email=user.email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
+        if not check_is_correct_string(user.username):
+            raise HTTPException(status_code=400, detail="Username can only contain letters and numbers")
+        if not check_is_correct_string(user.last_name):
+            raise HTTPException(status_code=400, detail="Last name can only contain letters and numbers")
+        if not check_is_correct_string(user.name):
+            raise HTTPException(status_code=400, detail="Name can only contain letters and numbers")
+        if not password_is_correct(user.password):
+            raise HTTPException(status_code=400, detail="Password must contain at least 8 characters, one uppercase letter, one lowercase letter and one number and one special character")
         encrypted_password = get_hashed_password(user.password)
         new_user = User(**UserCreate(
             name=user.name,
@@ -80,13 +114,6 @@ async def login(request: RequestDetails, db: Session = Depends(get_db)):
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
-@user_router.get("/getusers")
-async def getusers(
-    dependencies=Depends(JWTBearer()), session: Session = Depends(get_db)
-):
-    return session.query(User).all()
-
-
 @user_router.post("/change-password")
 async def change_password(request: ChangePassword, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
@@ -122,7 +149,7 @@ async def logout(dependencies=Depends(JWTBearer()), db: Session = Depends(get_db
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Expired token")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=403, detail="Invalid token")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -130,10 +157,7 @@ async def logout(dependencies=Depends(JWTBearer()), db: Session = Depends(get_db
 async def read_current_user(current_user: Annotated[User, Depends(get_current_active_user)]):
     return current_user
 
-# temporary schema how to use RoleChecker
-@user_router.get("/data")
-def get_data(_: Annotated[bool, Depends(RoleChecker(allowed_roles=["admin"]))]):
-  return {"data": "This is important data"}
+
 
     
 
