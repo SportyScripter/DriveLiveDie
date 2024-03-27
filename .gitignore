@@ -1,9 +1,10 @@
 .venv
 .idea/
 .vscode/
-
 frontend/node_modules/*
 frontend/.next/*
 frontend/coverage/*
 frontend/dist/*
 *__pycache__
+*.coverage
+backend/htmlcov
