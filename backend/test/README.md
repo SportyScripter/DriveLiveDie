@@ -18,6 +18,16 @@ docker-compose exec backend pytest
 
 This command runs all the tests in the `backend` service using pytest.
 
+## Generating Coverage Report in Terminal
+
+To generate a coverage report Terminal:
+
+```bash
+docker-compose exec backend coverage report
+```
+
+This command generates a coverage report.
+
 ## Generating Coverage Report
 
 To generate a coverage report in HTML format, you can use the pytest-cov plugin. Modify the above command as follows:
