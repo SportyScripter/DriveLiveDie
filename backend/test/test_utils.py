@@ -8,7 +8,6 @@ class MockUser:
         self.is_active = is_active
         self.role = role
         self.id = id
- 
 @pytest.fixture
 def mock_user():
     return MockUser()
