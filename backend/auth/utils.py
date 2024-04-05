@@ -72,7 +72,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(H
         raise credentials_exception
     
     user = get_user(user_id, db)  
-    if user is None:
+    if user is None or not user.is_active:  
         raise credentials_exception
     return user
 

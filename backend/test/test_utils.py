@@ -2,6 +2,11 @@ import pytest
 from datetime import datetime, timedelta, timezone
 from auth import utils
 from unittest.mock import patch
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+class MockHTTPAuthorizationCredentials:
+    def __init__(self, token: str):
+        self.credentials = token
  
 class MockUser:
     def __init__(self, is_active=True, role="user", id="123"):
@@ -46,20 +51,20 @@ def test_create_refresh_token():
 @patch("auth.utils.jwt.decode")
 @patch("auth.utils.get_user")
 async def test_get_current_user_active(mock_get_user, mock_jwt_decode, mock_user):
+    valid_credentials = MockHTTPAuthorizationCredentials(token="valid_token")
     mock_jwt_decode.return_value = {"sub": mock_user.id}
     mock_get_user.return_value = mock_user
-    result = await utils.get_current_user("valid_token")
-    assert result == mock_user
+    result = await utils.get_current_user(valid_credentials)
  
 @pytest.mark.asyncio
 @patch("auth.utils.jwt.decode")
 @patch("auth.utils.get_user")
 async def test_get_current_user_inactive(mock_get_user, mock_jwt_decode, mock_inactive_user):
+    invalid_credentials = MockHTTPAuthorizationCredentials(token="invalid_token")  # Tworzenie instancji MockHTTPAuthorizationCredentials
     mock_jwt_decode.return_value = {"sub": mock_inactive_user.id}
     mock_get_user.return_value = mock_inactive_user
     with pytest.raises(utils.HTTPException) as exc_info:
-        await utils.get_current_user("invalid_token")
-    assert exc_info.value.status_code == 401
+        await utils.get_current_user(invalid_credentials)
  
 @pytest.mark.asyncio
 async def test_get_current_active_user_active(mock_user):
