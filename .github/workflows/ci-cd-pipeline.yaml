@@ -22,32 +22,10 @@ jobs:
       - name: Build Docker images
         run: |
           docker-compose build
-  pylint:
-    name: Pylint
-    needs: docker-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt  
-          pip install pylint
-
-      - name: Run pylint
-        run: |
-          pylint $(git ls-files '*.py')
 
   backend-test:
     name: Backend Test
-    needs: pylint
+    needs: docker-build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -68,6 +46,25 @@ jobs:
 
       - name: Run pytest in Docker
         run: docker-compose exec -T backend pytest
+
+  backend-test-coverage:
+    name: Backend Test Coverage
+    needs: backend-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate coverage report in XML
+        run: docker-compose exec -T backend coverage xml -o coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   frontend-test:
     name: Frontend Test
@@ -96,3 +93,25 @@ jobs:
       - name: Run tests
         run: pnpm test
         working-directory: ./frontend
+
+  pylint:
+    name: Pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt  
+          pip install pylint
+
+      - name: Run pylint
+        run: |
+          pylint $(git ls-files '*.py')
