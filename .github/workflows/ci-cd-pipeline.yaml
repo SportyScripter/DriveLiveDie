@@ -45,7 +45,7 @@ jobs:
         run: dockerize -wait tcp://localhost:5433 -timeout 1m
 
       - name: Run pytest in Docker
-        run: docker-compose exec -T backend pytest
+        run: docker-compose exec -T backend coverage run -m pytest
 
   backend-test-coverage:
     name: Backend Test Coverage
