@@ -48,23 +48,29 @@ jobs:
         run: docker-compose exec -T backend pytest
 
   backend-test-coverage:
-    name: Backend Test Coverage
-    needs: backend-test
-    runs-on: ubuntu-latest
+  name: Backend Test Coverage
+  needs: backend-test
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Generate coverage report in XML
-        run: docker-compose exec -T backend coverage xml -o coverage.xml
+    - name: Start containers
+      run: docker-compose up -d
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          file: ./coverage.xml
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Wait for backend to be ready
+      run: sleep 10
+
+    - name: Generate coverage report in XML
+      run: docker-compose exec -T backend coverage xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   frontend-test:
     name: Frontend Test
