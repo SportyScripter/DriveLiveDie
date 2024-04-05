@@ -62,7 +62,10 @@ jobs:
       - name: Wait for backend to be ready
         run: sleep 10
 
-      - name: Generate coverage report in XML
+      - name: Run tests with coverage
+        run: docker-compose exec -T backend coverage run -m pytest
+
+      - name: Generate coverage report
         run: docker-compose exec -T backend coverage xml
 
       - name: Upload coverage to Codecov
