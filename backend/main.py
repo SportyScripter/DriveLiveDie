@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db.session import engine
-from db.base import Base
+from db.base_class import Base
 from auth.routers import user_router
 from core.config import settings
 from auth.utils import JWT_SECRET_KEY, ALGORITHM
