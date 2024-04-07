@@ -1,9 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Annotated 
-from fastapi.security import  HTTPBearer
 from jose import jwt 
-from pydantic import EmailStr
 
 from auth.schemas import (
     UserCreate,
@@ -17,7 +15,6 @@ from auth.utils import (
     create_access_token,
     create_refresh_token,
     get_hashed_password,
-    get_user,
     RoleChecker,
     get_current_active_user
 )
