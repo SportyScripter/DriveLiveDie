@@ -12,7 +12,6 @@ jobs:
   pylint:
     name: Pylint
     runs-on: ubuntu-latest
-    allow-failure: true
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -31,3 +30,4 @@ jobs:
       - name: Run pylint
         run: |
           pylint $(git ls-files '*.py')
+        continue-on-error: true
