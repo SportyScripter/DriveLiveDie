@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime 
+from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 import datetime
 
@@ -18,7 +18,6 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_date = Column(DateTime, default=datetime.datetime.now())
     role = Column(String, default="user")
-
 
     tokens = relationship("Token", back_populates="users")
     vehicles = relationship("Vehicle", back_populates="users")
@@ -40,6 +39,3 @@ class Token(Base):
 
     class Config:
         orm_mode = True
-
-
-
