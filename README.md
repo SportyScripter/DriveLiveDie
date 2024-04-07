@@ -4,7 +4,7 @@
 
 [![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml)
 
-[![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://app.codecov.io/github/SportyScripter/DriveLiveDie/commit/9d1630caf75acb8f0856b10acde42dc253bffa37)
+[![codecov](https://codecov.io/github/SportyScripter/DriveLiveDie/graph/badge.svg?token=119X24X6GZ)](https://codecov.io/github/SportyScripter/DriveLiveDie)
 
 # Technologies
 
