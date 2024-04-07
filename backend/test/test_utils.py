@@ -1,8 +1,7 @@
 import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import  timedelta
 from auth import utils
 from unittest.mock import patch
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 
 class MockHTTPAuthorizationCredentials:
