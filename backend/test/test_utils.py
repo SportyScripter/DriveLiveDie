@@ -1,5 +1,5 @@
 import pytest
-from datetime import  timedelta
+from datetime import timedelta
 from auth import utils
 from unittest.mock import patch
 

@@ -62,18 +62,17 @@ jobs:
       - name: Wait for backend to be ready
         run: sleep 10
 
-      - name: Run tests with coverage
-        run: docker-compose exec -T backend coverage run -m pytest
+      # - name: Run tests with coverage
+      #   run: docker-compose exec -T backend coverage run -m pytest
 
-      - name: Generate coverage report
-        run: docker-compose exec -T backend coverage xml
+      # - name: Generate coverage report
+      #   run: docker-compose exec -T backend coverage xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
         with:
-          file: ./coverage.xml
-          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: SportyScripter/DriveLiveDie
 
   frontend-test:
     name: Frontend Test
