@@ -51,10 +51,9 @@ jobs:
     name: Backend Test Coverage
     needs: backend-test
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Start containers
         run: docker-compose up -d
@@ -62,25 +61,18 @@ jobs:
       - name: Wait for backend to be ready
         run: sleep 10
 
-      - name: Run tests with coverage
-        run: docker-compose exec -T backend coverage run -m pytest--cov .
-
-      - name: Upload coverage reports to Codecov
+      - name: Run tests with coverage and generate report
         run: |
-          # Replace `linux` below with the appropriate OS
-          # Options are `alpine`, `linux`, `macos`, `windows`
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN}
-
-      - name: Generate coverage report
-        run: docker-compose exec -T backend coverage xml
+          docker-compose exec -T backend coverage run -m pytest --cov=. --cov-report=xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: SportyScripter/DriveLiveDie
+          files: ./backend/coverage.xml
+          flags: backend
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
   frontend-test:
     name: Frontend Test
