@@ -44,8 +44,17 @@ jobs:
       - name: Wait for database to be ready
         run: dockerize -wait tcp://localhost:5433 -timeout 1m
 
-      - name: Run pytest in Docker
-        run: docker-compose exec -T backend coverage run -m pytest
+      # - name: Run pytest in Docker
+      #   run: docker-compose exec -T backend coverage run -m pytest
+
+      - name: Run ATS
+        uses: codecov/codecov-ats@v0
+        env:
+          CODECOV_STATIC_TOKEN: ${{ secrets.CODECOV_STATIC_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run tests and collect coverage
+        run: docker-compose exec -T backend coverage run -m pytest ${{ env.CODECOV_ATS_TESTS }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
