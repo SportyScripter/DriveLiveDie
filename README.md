@@ -1,5 +1,11 @@
 # DriveLiveDie Services
 
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)![DigitalOcean](https://img.shields.io/badge/Digital_Ocean-0080FF?style=for-the-badge&logo=DigitalOcean&logoColor=white)
+
+[![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml)
+
+[![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://app.codecov.io/github/SportyScripter/DriveLiveDie/commit/9d1630caf75acb8f0856b10acde42dc253bffa37)
+
 # Technologies
 
 - **Python**

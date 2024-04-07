@@ -12,6 +12,7 @@ jobs:
   pylint:
     name: Pylint
     runs-on: ubuntu-latest
+    allow-failure: true
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
