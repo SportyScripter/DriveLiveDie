@@ -45,7 +45,34 @@ jobs:
         run: dockerize -wait tcp://localhost:5433 -timeout 1m
 
       - name: Run pytest in Docker
-        run: docker-compose exec -T backend pytest
+        run: docker-compose exec -T backend coverage run -m pytest
+
+  backend-test-coverage:
+    name: Backend Test Coverage
+    needs: backend-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start containers
+        run: docker-compose up -d
+
+      - name: Wait for backend to be ready
+        run: sleep 10
+
+      - name: Run tests with coverage and generate report
+        run: |
+          docker-compose exec -T backend coverage run -m pytest --cov=. --cov-report=xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./backend/coverage.xml
+          flags: backend
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
   frontend-test:
     name: Frontend Test

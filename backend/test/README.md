@@ -1,3 +1,7 @@
+# Test Badge
+
+[![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml)
+
 # Running Tests and Generating Coverage Report
 
 This document guides you through the process of running tests, generating a coverage report in HTML format, and viewing it in a browser using the Live Server extension in Visual Studio Code.
