@@ -8,3 +8,5 @@ frontend/dist/*
 *__pycache__
 *.coverage
 backend/htmlcov
+pip*
+*.toml
