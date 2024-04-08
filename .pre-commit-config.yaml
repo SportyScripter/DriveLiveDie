@@ -2,9 +2,23 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
-      - id: check-yaml
-      - id: end-of-file-fixer
       - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        description: This hook trims trailing whitespace.
+        entry: trailing-whitespace-fixer
+        language: python
+        types: [text]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: requirements-txt-fixer
+      - id: check-ast
+      - id: double-quote-string-fixer
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v1.25.0
+    hooks:
+      - id: pyupgrade
+        args: [--py36-plus]
   - repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
