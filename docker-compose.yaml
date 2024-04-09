@@ -31,6 +31,8 @@ services:
       - dld-network
 
   backend:
+    image: arkadiuszjuszczykue/dld-be:latest
+    container_name: DriveLiveDie_backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -56,6 +58,8 @@ services:
       - db
 
   frontend:
+    image: arkadiuszjuszczykue/dld-fe:latest
+    container_name: DriveLiveDie_frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
