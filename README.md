@@ -2,6 +2,10 @@
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)![DigitalOcean](https://img.shields.io/badge/Digital_Ocean-0080FF?style=for-the-badge&logo=DigitalOcean&logoColor=white)
 
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 [![Docker CI](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml/badge.svg)](https://github.com/SportyScripter/DriveLiveDie/actions/workflows/ci-cd-pipeline.yaml)
 
 [![codecov](https://codecov.io/github/SportyScripter/DriveLiveDie/graph/badge.svg?token=119X24X6GZ)](https://codecov.io/github/SportyScripter/DriveLiveDie)
