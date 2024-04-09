@@ -4,5 +4,5 @@ import { Index } from "../routes/index.lazy";
 
 test("Renders the main page", async () => {
     render(<Index />)
-    await screen.findByText("Hello!");
+    await screen.findByText("Hello from PR!");
 })
