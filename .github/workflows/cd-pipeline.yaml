@@ -26,13 +26,13 @@ jobs:
         docker-compose push
 
     # SSH and Deploy to VPS
-    # - name: Deploy to VPS
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: ${{ secrets.VPS_HOST }}
-    #     username: ${{ secrets.VPS_USERNAME }}
-    #     key: ${{ secrets.VPS_SSH_KEY }}
-    #     script: |
-    #       cd /path/to/your/project
-    #       docker-compose pull
-    #       docker-compose up -d
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: 209.38.152.46
+        username: root
+        password: PC%$PiV*L7RxtSe
+        script: |
+          cd /app
+          docker-compose pull
+          docker-compose up -d
