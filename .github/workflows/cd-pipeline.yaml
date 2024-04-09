@@ -34,5 +34,6 @@ jobs:
         password: PC%$PiV*L7RxtSe
         script: |
           cd /app
+          git pull
           docker-compose pull
           docker-compose up -d
