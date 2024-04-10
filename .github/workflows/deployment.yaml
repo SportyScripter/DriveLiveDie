@@ -2,35 +2,35 @@ name: Deployment
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    # Login to Docker Hub (or your container registry)
-    - name: Docker Hub Login
-      uses: docker/login-action@v1
-      with:
-        username: arkadiuszjuszczykue
-        password: supertajnehaslo
+      # Login to Docker Hub (or your container registry)
+      - name: Docker Hub Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWORD}}
 
-    # Build and push Docker images
-    - name: Build and Push Docker Images
-      run: |
-        docker-compose build
-        docker-compose push
+      # Build and push Docker images
+      - name: Build and Push Docker Images
+        run: |
+          docker-compose build
+          docker-compose push
 
-    # SSH and Deploy to VPS
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
-      with:
-        host: 209.38.152.46
-        username: root
-        password: PC%$PiV*L7RxtSe
-        script: |
-          cd /app
-          docker-compose pull
-          docker-compose up -d
+      # SSH and Deploy to VPS
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.VPS_HOST}}
+          username: ${{secrets.VPS_USERNAME}}
+          password: ${{secrets.VPS_PASSWORD}}
+          script: |
+            cd /app
+            docker-compose pull
+            docker-compose up -d
