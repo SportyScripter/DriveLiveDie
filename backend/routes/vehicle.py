@@ -10,9 +10,7 @@ from auth.utils import get_current_active_user
 from typing import Annotated
 from enum import Enum
 
-
 vehicle_router = APIRouter(prefix="/select", tags=["vehicle"])
-
 
 class CarYear(str, Enum):
     a = "2015"
