@@ -1,0 +1,4 @@
+[run]
+omit =
+    backend/locust.py
+    locust.py
