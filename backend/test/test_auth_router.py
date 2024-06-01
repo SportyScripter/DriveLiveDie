@@ -175,11 +175,11 @@ def test_password_is_correct():  # test password_is_correct function
     assert password_is_correct("T12$") == False
 
 def test_vehicles_fetch(): 
-    response = client.post("/vehicles")  
+    response = client.get("/vehicles")  
     assert response.status_code == 200
     assert response.json() == []
 
 def test_users_fetch(): 
-    response = client.post("/users")  
+    response = client.get("/users")  
     assert response.status_code == 200
     assert response.json() == []
