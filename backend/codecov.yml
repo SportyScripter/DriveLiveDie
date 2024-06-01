@@ -1,4 +1,0 @@
-# sample regex patterns
-ignore:
-  - "backend/locustfile.py"
-  - "locustfile.py"
