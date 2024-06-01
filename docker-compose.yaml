@@ -49,15 +49,6 @@ services:
     networks:
       - dld-network
 
-  test:
-    build:
-      context: ./backend
-    command: pytest
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-
   frontend:
     image: arkadiuszjuszczykue/dld-fe:latest
     pull_policy: always
