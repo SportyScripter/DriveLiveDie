@@ -12,7 +12,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     hashed_password = Column(String)
-    name = Column(String, index=True, nullable=False)
+    first_name = Column(String, index=True, nullable=False)
     last_name = Column(String, index=True, nullable=False)
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now())

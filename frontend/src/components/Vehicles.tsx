@@ -1,7 +1,12 @@
 import React from "react";
 
+interface Vehicle {
+  id: number;
+  name: string;
+}
+
 export function Vehicles() {
-  const [vehicles, setVehicles] = React.useState([]);
+  const [vehicles, setVehicles] = React.useState<Vehicle[]>([]);
 
   React.useEffect(() => {
     const fetchVehicles = async () => {
