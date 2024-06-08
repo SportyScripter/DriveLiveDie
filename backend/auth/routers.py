@@ -69,6 +69,14 @@ def check_is_correct_string(string: str):
 
 
 def password_is_correct(password: str):
+    if len(password) < 8:
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not any(char.isupper() for char in password):
+        return False
+    if not any(char.islower() for char in password):
+        return False
     table_with_correct_chars = [
         "!",
         "@",
@@ -101,44 +109,33 @@ def password_is_correct(password: str):
         "?",
         "/",
     ]
-    if len(password) < 8:
-        return False
-    if not any(char.isdigit() for char in password):
-        return False
-    if not any(char.isupper() for char in password):
-        return False
-    if not any(char.islower() for char in password):
-        return False
-    if not any(char in table_with_correct_chars for char in password):
-        return True
-    return True
+    return (
+        True
+        if all(char not in table_with_correct_chars for char in password)
+        else True
+    )
 
 
-@user_router.post("/register")
+@user_router.post("/register", response_model=TokenSchema)
 async def register_user(
     user: UserCreate,
     db: Session = Depends(get_db),
 ):
     if db.query(User).filter_by(email=user.email).first():
-        print(1)
         raise HTTPException(status_code=400, detail="Email already registered")
     if not check_is_correct_string(user.username):
-        print(2)
         raise HTTPException(
             status_code=400, detail="Username can only contain letters and numbers"
         )
     if not check_is_correct_string(user.last_name):
-        print(3)
         raise HTTPException(
             status_code=400, detail="Last name can only contain letters and numbers"
         )
     if not check_is_correct_string(user.first_name):
-        print(4)
         raise HTTPException(
             status_code=400, detail="First name can only contain letters and numbers"
         )
     if not password_is_correct(user.password):
-        print(5)
         raise HTTPException(
             status_code=400,
             detail="Password must contain at least 8 characters, one uppercase letter, one lowercase letter and one number and one special character",
@@ -152,8 +149,8 @@ async def register_user(
             password=user.password,
             email=user.email,
             username=user.username,
-            role=user.role,
-        ).dict()
+            role="user",
+        ).model_dump()
     )
 
     new_user.hashed_password = encrypted_password
@@ -168,12 +165,15 @@ async def register_user(
 def get_token_response(user_id: int, db: Session):
     access_token = create_access_token(user_id)
     refresh_token = create_refresh_token(user_id)
+
     token_db = Token(
         user_id=user_id, access_token=access_token, refresh_token=refresh_token, status=True
     )
+
     db.add(token_db)
     db.commit()
     db.refresh(token_db)
+
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 @user_router.post("/login", response_model=TokenSchema)

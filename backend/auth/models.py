@@ -1,3 +1,4 @@
+from typing import ClassVar
 from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 import datetime
