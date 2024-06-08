@@ -11,3 +11,5 @@ class UserVehicle(BaseModel):
     invoice: int
     interior: str
     rgb: str
+
+UserVehicle.update_forward_refs()
