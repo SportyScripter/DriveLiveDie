@@ -85,16 +85,10 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Add pnpm to PATH
-        run: echo "$(npm bin -g)" >> $GITHUB_PATH
-
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
         working-directory: ./frontend
 
       - name: Run tests
-        run: pnpm test
+        run: npm run test
         working-directory: ./frontend

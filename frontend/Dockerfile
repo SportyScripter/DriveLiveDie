@@ -4,20 +4,17 @@ FROM node:20-slim as build
 # Set the working directory in the container
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Copy package.json and pnpm-lock.yaml files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json ./
 
 # Install dependencies
-RUN pnpm install
+RUN npm install
 
 # Copy the rest of your app's source code
 COPY . .
 
 # Build the app
-RUN pnpm build
+RUN npm run build
 
 # Stage 2: Serve the app with Nginx
 FROM nginx:alpine

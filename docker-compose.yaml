@@ -40,8 +40,7 @@ services:
     volumes:
       - ./backend:/code
     ports:
-      - 8008:80
-      - 8089:8089
+      - 8090:8089 # Locust port
     depends_on:
       - db
     environment:
@@ -49,15 +48,6 @@ services:
       - WATCHFILES_FORCE_POLLING=true
     networks:
       - dld-network
-
-  test:
-    build:
-      context: ./backend
-    command: pytest
-    volumes:
-      - .:/code
-    depends_on:
-      - db
 
   frontend:
     image: arkadiuszjuszczykue/dld-fe:latest

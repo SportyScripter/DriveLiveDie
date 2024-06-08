@@ -18,3 +18,4 @@ coverage
 pytest-asyncio
 pylint
 pytest-cov==5.0.0
+locust
