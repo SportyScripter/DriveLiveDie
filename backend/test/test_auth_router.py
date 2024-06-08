@@ -18,7 +18,7 @@ def create_test_admin(db):  # method for creating test admin user
         email="testadmin@example.com",
         password="test123",
         hashed_password=get_hashed_password("test123"),
-        name="Test",
+        first_name="Test",
         last_name="User",
         role="admin",
     )
@@ -98,14 +98,13 @@ def test_logout_fail_invalid_token():  # test logout with invalid token
 
 
 def create_test_user_with_user_role():  # template for creating test user
-    test_user = {
-        "name": "TestUser",
+    return {
+        "first_name": "TestUser",
         "last_name": "UserTest",
         "password": "Testuser123!",
         "email": "testuser@example.com",
         "username": "testuser",
     }
-    return test_user
 
 
 def test_create_user_success():
