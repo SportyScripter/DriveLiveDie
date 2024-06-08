@@ -16,9 +16,9 @@ def create_test_admin(db):  # method for creating test admin user
     test_user = User(
         username="testadmin",
         email="testadmin@example.com",
-        password="test123",
-        hashed_password=get_hashed_password("test123"),
-        name="Test",
+        password="Testowe.Haslo.123",
+        hashed_password=get_hashed_password("Testowe.Haslo.123"),
+        first_name="Test",
         last_name="User",
         role="admin",
     )
@@ -31,7 +31,7 @@ def test_login_success():
     create_test_admin(db_session)  # create admin user for testing
     login_data = {
         "email": "testadmin@example.com",
-        "password": "test123",
+        "password": "Testowe.Haslo.123",
     }  # login data for admin user
     response = client.post("/auth/login", json=login_data)  # login admin user
     assert response.status_code == 200
@@ -53,7 +53,15 @@ def test_delete_token():  # test delete token
 
 
 def delete_test_user(db, email: str):  # method for deleting test user
-    db.query(User).filter(User.email == email).delete()
+    user = db.query(User).filter(User.email == email)
+    print("u", user, "f", user.first())
+
+    if user.first():
+        token = db.query(Token).filter(Token.user_id == user.first().id)
+        token.delete()
+
+    user.delete()
+
     db.commit()
 
 
@@ -71,7 +79,7 @@ def test_logout_success():  # test logout with token
     create_test_admin(db_session)  # create admin user for testing
     login_data = {
         "email": "testadmin@example.com",
-        "password": "test123",
+        "password": "Testowe.Haslo.123",
     }  # login data for admin user
     response = client.post("/auth/login", json=login_data)  # login admin user
     access_token = response.json()["access_token"]  # get access token
@@ -98,41 +106,30 @@ def test_logout_fail_invalid_token():  # test logout with invalid token
 
 
 def create_test_user_with_user_role():  # template for creating test user
-    test_user = {
-        "name": "TestUser",
+    return {
+        "first_name": "TestUser",
         "last_name": "UserTest",
         "password": "Testuser123!",
         "email": "testuser@example.com",
         "username": "testuser",
+        "role": "user"
     }
-    return test_user
 
 
 def test_create_user_success():
     db_session = SessionLocal()
     test_user = create_test_user_with_user_role()  # create temp user for testing
-    create_test_admin(db_session)  # create admin user for testing
-    login_data = {
-        "email": "testadmin@example.com",
-        "password": "test123",
-    }  # login data for admin user
-    response = client.post("/auth/login", json=login_data)  # login admin user
-    access_token = response.json()["access_token"]  # get access token
+    
+    print("test_user", test_user)
     response_create_user = client.post(
-        "/auth/create-user",
+        "/auth/register",
         json=test_user,
-        headers={"Authorization": f"Bearer {access_token}"},
     )  # create user
-    logout_response = client.post(
-        "/auth/logout", headers={"Authorization": f"Bearer {access_token}"}
-    )  # logout admin user
-    delete_test_user(db_session, email="testadmin@example.com")  # delete admin user
+
+    delete_test_user(db_session, email=test_user["email"])  # delete admin user
     assert response_create_user.status_code == 200
-    assert response_create_user.json() == {
-        "message": "User created successfully",
-        "data": {"username": "testuser", "email": "testuser@example.com"},
-    }
-    assert logout_response.status_code == 200
+    assert "access_token" in response_create_user.json()
+    assert "refresh_token" in response_create_user.json()
 
 
 def test_delete_test_user():  # test delete user

@@ -1,8 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Vehicles } from "../components/Vehicles";
-import React from "react";
 
-import { server } from "./mocks";
+import { server } from "./mocks.ts";
 
 describe("Vehicles", () => {
   beforeAll(() => {

@@ -1,7 +1,15 @@
 import React from "react";
 
+interface User {
+  id: number;
+  email: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+}
+
 export function Users() {
-  const [users, setUsers] = React.useState([]);
+  const [users, setUsers] = React.useState<User[]>([]);
 
   React.useEffect(() => {
     const fetchUsers = async () => {

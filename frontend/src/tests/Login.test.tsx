@@ -1,8 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Login } from "../components/Login";
-import React from "react";
 
-import { server } from "./mocks";
+import { server } from "./mocks.ts";
 
 describe("Login", () => {
   beforeAll(() => {
@@ -12,22 +11,22 @@ describe("Login", () => {
 
   test("Renders the form correctly", async () => {
     render(<Login />);
-    screen.findByLabelText("Email");
-    screen.findByLabelText("Password");
-    screen.findByRole("button", { name: "Login" });
+    screen.findByLabelText("Adres e-mail");
+    screen.findByLabelText("Hasło");
+    screen.findByRole("button", { name: "Zaloguj" });
   });
 
   test("Submits the form", async () => {
     render(<Login />);
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Email" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "Adres e-mail" }), {
       target: { value: "test@test.pl" },
     });
-    fireEvent.change(screen.getByRole("textbox", { name: "Password" }), {
+    fireEvent.change(screen.getByLabelText("Hasło"), {
       target: { value: "password" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Login" }));
+    fireEvent.click(screen.getByRole("button", { name: "Zaloguj" }));
   });
 
   test("matches snapshot", () => {
