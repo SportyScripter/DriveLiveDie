@@ -12,7 +12,6 @@ def decodeJWT(jwtoken: str):
     except InvalidTokenError:
         return None
 
-
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)

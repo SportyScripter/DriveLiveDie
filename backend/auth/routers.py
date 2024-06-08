@@ -150,7 +150,7 @@ async def register_user(
             email=user.email,
             username=user.username,
             role="user",
-        ).model_dump()
+        ).dict()
     )
 
     new_user.hashed_password = encrypted_password

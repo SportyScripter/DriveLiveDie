@@ -1,10 +1,8 @@
-from typing import ClassVar
 from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 import datetime
 
 from db.base_class import Base
-
 
 class User(Base):
     __tablename__ = "users"
@@ -25,7 +23,6 @@ class User(Base):
 
     class Config:
         orm_mode = True
-
 
 class Token(Base):
     __tablename__ = "tokens"
